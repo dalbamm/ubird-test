@@ -1,4 +1,4 @@
 var jwt = require('jsonwebtoken');
-var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+var token = jwt.sign({ id: 'bar' }, 'shhhhh');
 
 module.exports = token;
