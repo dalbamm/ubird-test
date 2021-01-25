@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/signin', function(req, res, next) {
-  res.send(jwt);
+  res.send(jwt.token);
 });
 
 router.get('/signup', function(req, res, next) {
