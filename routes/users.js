@@ -1,7 +1,9 @@
 var express = require('express');
 var jwtCustom = require('../jwt');
-var User = require('../entity/user.js')
 var router = express.Router();
+var cors=require('cors');
+
+var User = require('../entity/user.js')
 
 console.log(jwtCustom)
 
@@ -13,11 +15,14 @@ router.get('/signin', function(req, res, next) {
 });
 
 //sign in
-router.options('/signin', function(req, res, next) {
+router.post('/signin', function(req, res, next) {
   let acntObj= req.body;
   //console.log(acntObj);
-  let rst=new User(acntObj["email"],"0");
-  res.send(jwtCustom.generate(rst.toObj()));
+  let usr=new User(acntObj["email"],"0");
+  console.log(usr.toObj());
+  let tok=jwtCustom.generate(usr.toObj())
+  console.log(tok);
+  res.send(tok);
 });
 
 router.get('/signup', function(req, res, next) {
