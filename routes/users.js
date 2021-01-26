@@ -25,7 +25,7 @@ router.post('/secret', async function (req, res, next) {
 router.get('/signin', function (req, res, next) {
   let acntObj = req.body;
   console.log(acntObj);
-  res.send(jwt);
+  res.setHeader("Set-Cookie",`access_token=${token}`).send(jwt);
 });
 
 //sign in
@@ -40,7 +40,8 @@ router.post('/signin', async function (req, res, next) {
     res.status(401).send({ "msg": "Invalid account" })
   }
   else{
-    res.status(200).send({ "Authorization": jwt.generate({email:rst["email"], id:rst["_id"]}) });
+    let token = jwt.generate({email:rst["email"], id:rst["_id"]})
+    res.status(200).setHeader("Set-Cookie",`access_token=${token}`).send({ });
   }
 })
 
