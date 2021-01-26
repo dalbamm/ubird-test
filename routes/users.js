@@ -15,8 +15,7 @@ router.get('/signin', function(req, res, next) {
 //sign in
 router.options('/signin', function(req, res, next) {
   let acntObj= req.body;
-  console.log(acntObj);
-  
+  //console.log(acntObj);
   let rst=new User(acntObj["email"],"0");
   res.send(jwtCustom.generate(rst.toObj()));
 });
@@ -25,7 +24,8 @@ router.get('/signup', function(req, res, next) {
   res.send('signup');
 });
 
-router.get('/validate', function(req, res, next) {
+router.options('/validate', function(req, res, next) {
+  let token=req.body;
   res.send('validate');
 });
 
