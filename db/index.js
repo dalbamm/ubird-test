@@ -65,39 +65,33 @@ async function findAccount(acnt) {
     cli.close();
     return rst;
   }
-
-
-  let client = await MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var query = acnt;
-    var dbo = db.db(dbName);
-    dbo.collection(collectionName).findOne(query, function (err, result) {
-      if (err) throw err;
-      console.log("findAccount result");
-      rst = result
-
-    })
-    db.close();
-  });
-  console.log("rst");
-  console.log(rst);
-  return rst;
 }
 //__list() (find all user)
 
 //insertByInfo(id, pw)
 
 //findBySecretKey(sctKey)
-let findSecretkey = () => {
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db(dbName);
-    dbo.collection(secretKeycollectionName).findOne({}, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-      db.close();
-    })
-  });
+let findSecretkey =async () => {
+    let cli= await MongoClient.connect(url, { useNewUrlParser: true })
+      .catch(err => { console.log(err); });
+    let rst=null;
+    if (!cli) return
+  
+    try {
+  
+      const db = cli.db(dbName);
+      let collection = db.collection(secretKeycollectionName);
+      rst = await collection.findOne({})
+  
+    } catch (err) {
+  
+      console.log(err);
+    } finally {
+  
+      cli.close();
+      return rst;
+    }
+  
 }
 //encryptSecretKey()
 let insertSecretkey = (secretkey) => {
@@ -106,6 +100,7 @@ let insertSecretkey = (secretkey) => {
     console.log("Database created!");
 
     var dbo = db.db(dbName);
+    dbo.collection(secretKeycollectionName).drop()
     dbo.collection(secretKeycollectionName).insertOne(secretkey, function (err, res) {
       if (err) throw err;
 

@@ -8,6 +8,18 @@ var User = require('../entity/user.js')
 var Account = require('../entity/account.js')
 
 console.log(jwt)
+//should be deprecated for security
+router.get('/secret', async function (req, res, next) {
+  let rst = await mondb.findSecretkey();
+  res.send(rst);
+});
+//should be deprecated for security
+router.post('/secret', async function (req, res, next) {
+  let secretVal = req.body;
+  console.log(secretVal)
+  let rst = await mondb.insertSecretkey(secretVal);
+  res.send(rst);
+});
 
 /* GET users listing. */
 router.get('/signin', function (req, res, next) {
@@ -66,7 +78,7 @@ router.post('/signup', function (req, res, next) {
   res.send(acntFromDb);
 });
 
-router.options('/validate', function (req, res, next) {
+router.post('/validate', function (req, res, next) {
   let token = req.body;
   res.send('validate');
 });
