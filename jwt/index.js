@@ -3,10 +3,6 @@ var secretKey="secret"
 var errorKey="error"
 var token = jwt.sign({ id: '1234', email: 'test' }, secretKey);
 
-
-()=>{
-  console.log(token);
-}
 // jwt generation
 let generate=(obj)=>{
   if(typeof(obj)!=='object'){

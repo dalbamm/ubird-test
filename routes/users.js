@@ -1,36 +1,73 @@
 var express = require('express');
-var jwtCustom = require('../jwt');
+var jwt = require('../jwt');
+var mondb = require('../db');
 var router = express.Router();
-var cors=require('cors');
+var cors = require('cors');
 
 var User = require('../entity/user.js')
+var Account = require('../entity/account.js')
 
-console.log(jwtCustom)
+console.log(jwt)
 
 /* GET users listing. */
-router.get('/signin', function(req, res, next) {
-  let acntObj= req.body;
+router.get('/signin', function (req, res, next) {
+  let acntObj = req.body;
   console.log(acntObj);
-  res.send(jwtCustom);
+  res.send(jwt);
 });
 
 //sign in
-router.post('/signin', function(req, res, next) {
-  let acntObj= req.body;
+router.post('/signin', async function (req, res, next) {
+  let acntObj = req.body;
   //console.log(acntObj);
-  let usr=new User(acntObj["email"],"0");
-  console.log(usr.toObj());
-  let tok=jwtCustom.generate(usr.toObj())
-  console.log(tok);
-  res.send(tok);
+
+  let rst = await mondb.findAccount(acntObj)
+  console.log("rst_post:");
+  console.log(rst);
+  if(rst===null){
+    res.status(401).send({ "msg": "Invalid account" })
+  }
+  else{
+    res.status(200).send({ "Authorization": jwt.generate({email:rst["email"], id:rst["_id"]}) });
+  }
+})
+
+
+  // if (acntFromDb === null) {
+  //   res.send({ "msg": "Not found" })
+  //   return;
+  // }
+  
+
+//let usr=new User(acntObj["email"],"0");
+//console.log(usr.toObj());
+//mondb.findAccount(usr.toObj());
+
+
+router.post('/signup', function (req, res, next) {
+  let acntObj = req.body;
+  //console.log(acntObj);
+
+  let acntFromDb = mondb.insertAccount(acntObj);
+  console.log(acntFromDb);
+
+
+  //let usr=new User(acntObj["email"],"0");
+
+  //console.log(usr.toObj());
+
+
+
+  //let tok=jwt.generate(usr.toObj())
+
+  //mondb.findAccount(usr.toObj());
+
+  ///console.log(tok);
+  res.send(acntFromDb);
 });
 
-router.get('/signup', function(req, res, next) {
-  res.send('signup');
-});
-
-router.options('/validate', function(req, res, next) {
-  let token=req.body;
+router.options('/validate', function (req, res, next) {
+  let token = req.body;
   res.send('validate');
 });
 
