@@ -1,7 +1,7 @@
 var jwt = require('jsonwebtoken');
 var secretKey="secret"
 var errorKey="error"
-var token = jwt.sign({ id: '1234', email: 'test' }, secretKey);
+//var token = jwt.sign({ id: '1234', email: 'test' }, secretKey);
 
 // jwt generation
 let generate=(obj)=>{
@@ -12,7 +12,13 @@ let generate=(obj)=>{
   return token_gen;
 }
 // "/validate" jwt validation
-
+let validate=(token, secretKey)=>{
+  
+  let rst;
+  try{rst= jwt.verify(token, secretKey);}
+  catch(e){console.error(e) ; throw e;}
+  return rst;
+}
 // get secretKey from DB for jwt validation
 
 // get secretKey from DB for jwt validation
@@ -23,4 +29,4 @@ let generate=(obj)=>{
 
 //
 
-module.exports = {token, generate}
+module.exports = {generate, validate}

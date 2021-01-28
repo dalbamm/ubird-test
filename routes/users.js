@@ -7,7 +7,6 @@ var cors = require('cors');
 var User = require('../entity/user.js')
 var Account = require('../entity/account.js')
 
-console.log(jwt)
 //should be deprecated for security
 router.get('/secret', async function (req, res, next) {
   let rst = await mondb.findSecretkey();
@@ -37,11 +36,13 @@ router.post('/signin', async function (req, res, next) {
   console.log("rst_post:");
   console.log(rst);
   if(rst===null){
-    res.status(401).send({ "msg": "Invalid account" })
+    res.status(401).send({ "result": "fail" })
   }
   else{
     let token = jwt.generate({email:rst["email"], id:rst["_id"]})
-    res.status(200).setHeader("Set-Cookie",`access_token=${token}`).send({ });
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type, Authorization")
+    res.setHeader("Set-Cookie",`token=${token};Domain=sangchu.net;Path=/;Max-Age=1000;Expires=Thr, 28 Dec 2021 23:28:00 GMT;`)
+    res.status(200).send({ "result": "ok" });
   }
 })
 
@@ -79,9 +80,25 @@ router.post('/signup', function (req, res, next) {
   res.send(acntFromDb);
 });
 
-router.post('/validate', function (req, res, next) {
-  let token = req.body;
-  res.send('validate');
+router.post('/validate', async function (req, res, next) {
+  let token = null;
+  let scrtKey=await mondb.findSecretkey();
+  console.log("scrtKey");
+  console.log(scrtKey);
+  let rst=null;
+  try{
+    token= req.body["token"];
+    console.log(token);
+    rst=jwt.validate(token, scrtKey["secretKey"]);
+
+  } catch(e) {
+    console.error("/validate")
+    console.error(e)
+    res.status(400).send({"result":"error","detail":e})
+  }
+  res.send(rst);
 });
+
+//duplicate check
 
 module.exports = router;
